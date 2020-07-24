@@ -5,10 +5,13 @@ lapply(list.of.packages, library, character.only = TRUE)
 install_github("thaos/gcoWrapR")
 library(gcoWrapR)
 
-graphcut <- function(var_present,var_future,weight_data,weight_smooth){
+t=0
+
+graphcut <- function(var.present,var.future,gc.type,weight.data,weight.smooth){
   
   ### var_present and var_future : arrays of models outputs used in the GraphCut
-  ### weight_data and weight_smooth : number (1 for both is approximatly the optimal choice)
+  ### name : what type of graph cut will be created : present, hybrid, future.
+  ### weight.data and weight.smooth : number (1 for both is approximatly the optimal choice)
   
   nlabs = length(model_names)-1 ### Number of labels used in the GC. Needs to be total number -1 since C++ index starts from 0
   width = ncol(ref)
@@ -52,14 +55,9 @@ graphcut <- function(var_present,var_future,weight_data,weight_smooth){
   
   # Preparing the data to perform GraphCut
   
-  label_attribution <- array(0,c(nrow = height,ncol = width,length(model_names))) ### Each dimension contains the GraphCut result for a given reference
-  data_smooth_list <- vector("list",length(model_names)) ### Values of data and smooth energy for each GraphCut 
+  bias <- bias_future <- array(0,c(nrow = height,ncol = width,(length(model_names)-1))) ### Creating the bias arrays to set the data and smooth cost functions
   
-  t=0
-  
-  bias <- bias_future <- array(0,c(nrow = height,ncol = width,length(model_names))) ### Creating the bias arrays to set the data and smooth cost functions
-  
-  for(i in 1:length(model_names)){
+  for(i in 1:(length(model_names)-1)){
     bias[,,i] <- var_present[,,i] - ref
     bias_future[,,i] <- var_future[,,i] - ref_future
   }
@@ -67,10 +65,28 @@ graphcut <- function(var_present,var_future,weight_data,weight_smooth){
   bias_cpp = c(aperm(bias, c(2, 1, 3))) ### Permuting longitude and latitude since the indexing isn't the same in R and in C++
   bias_future_cpp = c(aperm(bias_future, c(2, 1, 3)))
   
-  gco$setDataCost(ptrDataCost, list(numPix = width * height, data = bias_cpp, weight = weight_data))
-  gco$setSmoothCost(ptrSmoothCost, list(numPix = width * height, data = bias_cpp, weight = weight_smooth))
+  if(gc.type == "present"){
+    gco$setDataCost(ptrDataCost, list(numPix = width * height, data = bias_cpp, weight = weight.data))
+    gco$setSmoothCost(ptrSmoothCost, list(numPix = width * height, data = bias_cpp, weight = weight.smooth))
+  }
   
-  mat_init <- matrix(0,height,width) ### Creating an initialization matrix
+  if(gc.type == "hybrid"){
+    gco$setDataCost(ptrDataCost, list(numPix = width * height, data = bias_cpp, weight = weight.data))
+    gco$setSmoothCost(ptrSmoothCost, list(numPix = width * height, data = bias_future_cpp, weight = weight.smooth))
+  }
+  
+  if(gc.type == "future"){
+    gco$setDataCost(ptrDataCost, list(numPix = width * height, data = bias_future_cpp, weight = weight.data))
+    gco$setSmoothCost(ptrSmoothCost, list(numPix = width * height, data = bias_future_cpp, weight = weight.smooth))
+  }
+  
+  mae_list <- vector("list",(length(model_names)-1)) ### Creating a list to select the best model among the ensemble in terms of mean absolute bias
+  
+  for(i in 1:length(mae_list)){
+    mae_list[[i]] <- mean(abs(bias[,,i]))
+  }
+  
+  mat_init <- bias[,,(which.min(mae_list))] ### Creating an initialization matrix
   
   vec_init <- as.vector(t(mat_init)) ### Permuting the indexing from R to C++
   
@@ -91,6 +107,9 @@ graphcut <- function(var_present,var_future,weight_data,weight_smooth){
   cat("GraphCut optimization done :  ")
   print(time_spent)
   
+  label_attribution <- array(0,c(nrow = height,ncol = width,length(model_names))) ### Each dimension contains the GraphCut result for a given reference
+  data_smooth_list <- vector("list",length(model_names)) ### Values of data and smooth energy for each GraphCut 
+  
   data_cost <- gco$giveDataEnergy() ### Storing the energies for the GraphCut
   smooth_cost <- gco$giveSmoothEnergy()
   
@@ -107,5 +126,7 @@ graphcut <- function(var_present,var_future,weight_data,weight_smooth){
   }
   
   label_attribution[,,t] <- tmp_label_attribution
+  
+  return(label_attribution)
 }
 
