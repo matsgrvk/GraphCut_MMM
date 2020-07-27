@@ -32,7 +32,7 @@ graphcut <- function(var.present,var.future,gc.type,weight.data,weight.smooth){
   return(weight * std::abs(data[p + numPix * l]) );
 }',
   includes = c("#include <math.h>", "#include <Rcpp.h>"),
-  rebuild = TRUE, showOutput = FALSE, verbose = FALSE
+  rebuild = TRUE, showOutput = TRUE, verbose = TRUE
   )
   
   cat("Creating SmoothCost function...  ")
@@ -48,7 +48,7 @@ graphcut <- function(var.present,var.future,gc.type,weight.data,weight.smooth){
   return(weight * cost);
 }',
   includes = c("#include <math.h>", "#include <Rcpp.h>"),
-  rebuild = TRUE, showOutput = FALSE, verbose = FALSE
+  rebuild = TRUE, showOutput = TRUE, verbose = TRUE
   )
   
   # Preparing the data to perform GraphCut
