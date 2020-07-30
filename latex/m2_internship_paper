@@ -1,0 +1,689 @@
+
+\documentclass[a4paper,12pt, french]{article}
+
+\usepackage[T1]{fontenc} % Use 8-bit encoding that has 256 glyphs
+\usepackage{fourier} % Use the Adobe Utopia font for the document - comment this line to return to the LaTeX default
+\usepackage[utf8]{inputenc}
+\usepackage[frenchb]{babel} % English language/hyphenation
+\usepackage{caption}
+\usepackage{amsmath,amsfonts,amsthm} % Math packages
+\usepackage[margin=2cm]{geometry}
+\usepackage{python}
+\usepackage{amsmath}
+\usepackage{pdfpages}
+\usepackage{listings}
+\usepackage{cases}
+\usepackage{subcaption}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{natbib}
+\usepackage{stmaryrd} 
+\usepackage[toc,page]{appendix}
+\usepackage{amsthm}
+\usepackage{gensymb}
+\usepackage{pgfplots}
+\usepackage{mathenv}
+\usepackage{setspace}
+\usepackage{longtable}
+\usepackage[euler]{textgreek}
+\usepackage{lineno}
+\usepackage{wrapfig}
+\usepackage[svgnames]{xcolor}
+\usepackage{listings}
+\usepackage{fancyhdr} % Custom headers and footers
+\usepackage{lipsum} % Used for inserting dummy 'Lorem ipsum' text into the template
+\usepackage{sectsty} % Allows customizing section commands
+\graphicspath{{/homel/mgarvik/Bureau/Rapport/}}
+
+\usepackage{changepage}% http://ctan.org/pkg/changepage
+\usepackage{lipsum}% http://ctan.org/pkg/lipsum
+\makeatletter
+
+\usepackage{diagbox}
+
+\newenvironment{chapabstract}{%
+}%
+   {\par}
+\makeatother
+
+
+
+\pagestyle{fancyplain} % Makes all pages in the document conform to the custom headers and footers
+\fancyhead{} % No page header - if you want one, create it in the same way as the footers below
+\fancyfoot[L]{} % Empty left footer
+\fancyfoot[C]{} % Empty center footer
+\fancyfoot[R]{\thepage} % Page numbering for right footer
+\renewcommand{\headrulewidth}{0pt} % Remove header underlines
+\renewcommand{\footrulewidth}{0pt} % Remove footer underlines
+\setlength{\headheight}{13.6pt} % Customize the height of the header
+
+
+\renewcommand{\contentsname}{Table of Contents}
+\renewcommand{\appendixtocname}{Supplementary} 
+\renewcommand{\appendixpagename}{Supplementary} 
+
+
+%enlève elsiever
+\makeatletter
+\def\ps@pprintTitle{%
+ \let\@oddhead\@empty
+ \let\@evenhead\@empty
+ \def\@oddfoot{\centerline{\thepage}}%
+ \let\@evenfoot\@oddfoot}
+\makeatother
+
+\bibliographystyle{abbrvnat}
+\setcitestyle{authoryear,open={(},close={)}}
+ 
+ 
+\newtheorem{mylemma}{Lemma}
+
+\begin{document}
+
+\onehalfspacing
+
+\begin{titlepage}
+
+\newcommand{\HRule}{\rule{\linewidth}{0.5mm}} % Defines a new command for the horizontal lines, change thickness here
+
+\center % Center everything on the page
+ 
+%----------------------------------------------------------------------------------------
+%	LOGO SECTION
+%----------------------------------------------------------------------------------------
+
+\begin{figure}[!htb]
+\minipage{0.32\textwidth}
+     \centering
+     \includegraphics[width=4cm, height=4cm]{logo_uns2.png}\\
+     \textbf{UFR Sciences}\\
+     \textbf{Département de géographie}
+\endminipage\hfill
+\minipage{0.32\textwidth}
+     \centering
+     \includegraphics[width=4cm, height=4cm]{logo_lsce.jpg}\\
+     \textbf{Laboratoire des Sciences du Climat et de l'Environnement}
+\endminipage\hfill
+\minipage{0.32\textwidth}
+     \centering
+     \includegraphics[width=5cm, height=4cm]{logo_espace.png}\\
+     \textbf{UMR CNRS 7300 ESPACE}
+\endminipage
+\end{figure}
+\\[1.5cm]
+ 
+\vfill % Fill the rest of the page with whitespace
+ 
+%----------------------------------------------------------------------------------------
+%	HEADING SECTIONS
+%----------------------------------------------------------------------------------------
+
+\textsc{\large \textbf{MASTER "Gestion de l'environnement"}}\\[0.2cm] % Name of your university/college
+\textsc{\large \textbf{M2}\\[0.2cm]}  % Major heading such as course name
+{{Parcours "Pollution Atmosphérique, changement climatique, Impacts sanitaires, énergies Renouvelables (AIR)}"\\[1cm]}
+% \textsc{\large}\\[0.5cm] % Minor heading such as course title
+
+%----------------------------------------------------------------------------------------
+%	TITLE SECTION
+%----------------------------------------------------------------------------------------
+
+
+{ \huge  \textbf{Combinaison de simulations climatiques \\[0.2cm] par "graph cut"} \\[2cm]} % Title of your document
+ 
+%----------------------------------------------------------------------------------------
+%	AUTHOR SECTION
+%----------------------------------------------------------------------------------------
+
+\begin{minipage}{0.4\textwidth}
+\center
+\large
+\textbf{Mats \textsc{GARVIK}}\\[2cm] % Your name
+\end{minipage}\\[2cm]
+
+
+
+\begin{flushleft}
+\textbf{Direction de recherche: Dr. Mathieu VRAC, Dr. Soulivanh THAO, Pr. Grégoire MARIÉTHOZ}\\[1.5cm] % Your name
+\end{flushleft}
+
+
+{\large \today}\\[1cm] % Date, change the \today to a set date if you want to be precise
+
+\vfill % Fill the rest of the page with whitespace
+
+\end{titlepage}
+
+%\part{Table of Contents}
+\pagebreak
+\tableofcontents
+
+\pagebreak
+\subsection{Remerciements}
+
+Compte tenu de la situation dans laquelle s'est déroulée ce stage, beaucoup de personnes sont à remercier. Tout d'abord, Mathieu, Soulivanh et Grégoire, mes trois encadrants qui m'ont permis d'accomplir ce travail, concrétisé par cet article. Je vous remercie de m'avoir donné la chance de vous accompagner durant presque un an au total et j'espère que ce projet de graph cut pourra encore grandir longtemps. Je tiens aussi à remercier le reste de l'équipe ESTIMR, bien que je ne les ai pas beaucoup vus cette année, et leur souhaite beaucoup de réussite dans leurs projets et dans leur vie personnelle.
+
+Je tiens aussi à remercier mes proches, et tout particulièrement Lucie, sans qui maintes et maintes fois j'aurais baissé les bras~!
+Bien que ce parcours en recherche ait été plus bref que je ne l'aurais pensé il y a quelque temps, je suis reconnaissant auprès de toutes les personnes que j'ai pu rencontrer, et qui m'ont permis de rendre ce voyage agréable.
+
+\subsection{Présentation du laboratoire}
+
+Le LSCE est une unité mixte de recherche (UMR 8212) entre le CEA (Commissariat à l'énergie atomique et aux énergies alternatives), le CNRS (Centre national de la recherche scientifique) et l'Université de Versailles Saint-Quentin (UVSQ), localisé sur deux sites (Campus du CEA-Orme des Merisiers et du CNRS Gif-sur-Yvette). Il fait partie de l'Institut Pierre Simon Laplace (IPSL).  Le LSCE regroupe environ 300 chercheurs, ingénieurs et agents administratifs dont 150 personnels permanents issus des trois tutelles et plusieurs dizaines d'étudiants thésitifs.\\
+
+Depuis janvier 2015, le LSCE s’organise en trois thèmes scientifiques, dont Climat et Cycles - Modélisation de leurs variabilités et de leurs interactions, thème dont fait partie l'équipe ESTIMR (Extrèmes : Statistiques, Impacts et Régionalisation). L’équipe ESTIMR a pour objectifs principaux : la compréhension et la modélisation de la variabilité climatique et environnementale à différentes échelles spatiales – depuis les très grandes structures liées à la dynamique atmosphérique jusqu’à des phénomènes très locaux – et à différentes échelles temporelles – pour l’étude de climats passés, des processus présents et des évolutions futures. Dans ce cadre très vaste, l’une des forces de l’équipe ESTIMR repose sur l’utilisation et le développement de modèles statistiques de l’état-de-l‘art adaptés aux problématiques climatiques, grâce à une interaction multidisciplinaire soutenue entre climatologie, modélisation, physique et statistiques. L’équipe ESTIMR se trouve donc à l’interface entre la recherche en climatologie et certaines questions sociétales (liées aux impacts du changement climatique) en développant des outils statistiques servant de passerelles entre les deux, et utilisables par la communauté scientifique et la société.
+
+\pagebreak
+
+
+\begin{chapabstract}
+\noindent\rule{17cm}{0.4pt}\\
+\textbf{Abstract.} 
+
+Multi-model ensembles are commonly used to combine models and helps to reduce the global bias, but this approach can be criticized. Many methods were developed to improve multi-model ensembles performance, such as multi-model mean. A new combining approach based on graph cut is proposed, based on a computer vision method, to compare their ability to replicate a future climatology. The main idea of our approach to select the information of a single model among a multi-model ensemble for each grid point instead of equally averaging each models, and to take into consideration spatial consistency. In terms of mean absolute error and overall distribution, tests show that graph cut performs better than multi-model mean, with model projections in a perfect model approach. We also compared results between graph cut and multi-model mean using reanalysis data, considered here as observations. The results confirmed that graph cut was performing better than multi-model mean in terms of mean absolute error and overall distribution as well. In terms of spatial consistency, multi-model mean performs better than graph cut. Based on these results, we conclude that graph cut outperforms equal weighting multi-model mean, and can be enhanced with every method developed involving multi-model ensembles. 
+
+
+
+
+\\
+\noindent\rule{17cm}{0.4pt}
+\end{chapabstract}
+
+\section{Introduction}
+\linenumbers
+\modulolinenumbers[5]
+\begin{linenumber}
+
+Climate models output are a key tool to project as precisely as possible the evolution of the climate, especially since the human activities were established to be the main cause of global warming (Solomon et al., 2007). But, because of climate variability and small scale events, some local or regional differences between those models and the observations (or reanalysis) can occur, creating uncertainties or biases.
+
+Biases can be adjusted statistically, but models can also be assembled into multi-model ensembles (MMEs) and averaged into multi-model mean (MMM) in order to extract the signal that is robust among different models (Tebaldi and Knutti, 2007). These MMEs and MMMs are part of the Coupled Model Intercomparison Project or CMIPs (Meehl et al., 2000), and are essential to manage risks for our societies (Kunreuther et al., 2013). Many MMEs based methods were developed, basically separated between equal-weighting and non-equal weighting-methods. For now, equal-weighting, such as multi-model mean (MMM) seems to be the most reliable method (Weigel et al., 2010 ; Auger et al., 2018). Non-equal-weighting methods are based on finding optimal weights to improve the MMM result, such as Bayesian Model Averaging (BMA, Bhat et al., 2011 ; Olson et al., 2016) or Weighted Ensemble Averaging (WEA, Casanova et al., 2009 ; Wanders et al., 2016 ; Knutti et al. 2017). These methods assign weights to models based on their performance. Other methods, such as Reliability Ensemble Average (REA, Giorgi \& Mearns, 2002), are weighting models taking in consideration biases and trend. But, there are still uncertainties in MMMs, linked to models themselves and the construction of the MME. The uncertainties in models themselves are linked to the different scenarii, the model response uncertainty and the variabily of the climate (Hawkins \& Suttons, 2009, Knutti et al., 2010). In terms of MMM, the amount of models that can be used to create a skillfull MMM is limited. A too large MMM can perform worse than a small MMM constructed with only good models (Knutti et al., 2010), but weighting methods can increase the amount of models used to construct the MMM (Merrifield et al., 2019 pre-print ; Brenner et al., 2020 pre-print). Next, weights given to a model are global. It means that, even if a model can represent Europe temperature very well, if it is considered as "bad" overall, it will not be able to contribute to improve Europe temperature in the combination. The MMM might represent this area worse than the model alone. Hence, the idea was to find a method based on MME which would consider the local performance of models and reduce the errors between models and observations (bias). One option would be to select the best model within the MME for each grid point. Unfortunately, the result would present incoherences, such as errors in local spatial consistency.
+
+We proposed an approach to improve the representation of the climatology which would allow to minimize bias and maintain the local spatial dependencies. We decided to follow a technique called graph cut (GC). GC is mainly used in computer vision (Kwattra et al., 2003 ; Boykov et al., 2006 ; Salah et al., 2010) and geostatistics (Mariéthoz and Caers, 2014 ; Li et al., 2016) to assemble or reshape images by « stitching » other images the best possible way. In this paper, we will call this stitching between images with this approach GC. The quality of this new image is evaluated by the visibility of the stiches. The less visible they are, the better the result is. In practise, this quality is represented as a cost function called energy in the Markov Random Field (MRF) literature (Szeliski et al., 2006). GC algorithms are a way to minimize this energy. Model ouputs can be seen as images where each grid point can be interpreted as a pixel. Therefore, we can use GC to combine outputs from differents models so that the combination exhibits less biases than the individual models while trying to preserve the spatial dependencies at the local scale. The result would assemble the best models based on their biases and spatial dependencies with the best possible stitches. 
+
+In this work, we will compare our new method to combine models based on GC and MMM approach.
+
+Models and reanalysis data, the GC algorithm and the design of experiment will be described in section 2. Results will be detailed in section 3. Finally, the section 4 will be dedicated to discussion and conclusions.
+
+
+
+\section{Data and methods}
+
+
+
+\subsection{Models and reanalysis data}
+
+This work is based on 5 CMIP5 models : CNRM-CM5 from the Centre National de Recherches Météorologiques (CNRM), IPSL-CM5A-LR from the Institut Pierre Simon Laplace (IPSL), MPI-ESM-LR from the Max Planck Institute for Meteorology (MPI-M), the GISS-E2-H from the NASA Goddard Institute for Space Studies (NASA-GISS) and the NorESM1-M from the Norwegian Climate Center (NCC). The variable used are the near surface temperature (TAS) and the total precipitation (PR) for the historical and the RCP 8.5 scenarios. These data were merged from monthly average into two 30-year climatology files : present (1979-2008) and future (2071-2100). Therefore, each grid point represents the annual mean of the variable over 30 years. Figures 1.b to 1.f represent the temperature bias maps for each model using ERA5 as a reference. These models were re-gridded onto a 1°x1° latitude-longitude grid using bilinear interpolation, which corresponds to a 65160 global grid cells. In conjunction, we are using reanalysis data from the European Centre for Medium-Range Weather Forecasts (ECMWF) ERA5 (Hersbach, 2016), using TAS and PR for the period 1979-2008. Figure 1.a represents the temperature map the ERA5. They were also re-gridded from monthly average data such as the CMIP5 models, which corresponds to a 65160 global grid cells too (figure \ref{tas_era}). In parallel, this work is also realised using 20 CMIP5 models.
+
+\begin{figure}[h!]
+  \centering
+  \begin{subfigure}{0.45\textwidth}
+    \includegraphics[width=\linewidth]{tas_era.jpeg}
+    \caption{ERA5.}
+    \label{tas_era}
+  \end{subfigure}
+  \begin{subfigure}{0.45\textwidth}
+    \includegraphics[width=\linewidth]{bias_cnrm.jpeg}
+    \caption{CNRM-CM5.}
+     \label{bias_cnrm}
+  \end{subfigure}
+  \begin{subfigure}{0.45\textwidth}
+    \includegraphics[width=\linewidth]{bias_giss.jpeg}
+    \caption{GISS-E2-H.}
+     \label{bias_giss}
+  \end{subfigure}
+  \begin{subfigure}{0.45\textwidth}
+    \includegraphics[width=\linewidth]{bias_ipsl.jpeg}
+    \caption{IPSL-CM5A-LR.}
+     \label{bias_ipsl}
+  \end{subfigure}
+  \begin{subfigure}{0.45\textwidth}
+    \includegraphics[width=\linewidth]{bias_mpi.jpeg}
+    \caption{MPI-ESM-LR.}
+     \label{bias_mpi}
+  \end{subfigure}
+  \begin{subfigure}{0.45\textwidth}
+    \includegraphics[width=\linewidth]{bias_noresm.jpeg}
+    \caption{NorESM1-M.}
+     \label{bias_noresm}
+  \end{subfigure}
+  \caption{Temperature map of ERA5 reanalysis (a) and bias temperature map of used models (b,c,d,e,f).}
+\end{figure}
+
+\subsection{Graph cut via \textalpha-\textbeta~swap move}
+
+The main idea of this work is to consider that a model output can be represented as an image through maps. Since GC can be used on images, therefore GC can be used to combine model outputs.
+
+To convert models output, represented as matrix, into graphs, we will describe the terms we used during this study. The conversion is presented in figure \ref{graph_image}.
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=\textwidth]{figure_graph_matrix.png}
+    \caption{GC approach. Pixels or grid cells are represented as squares. Graphs are represented as circles (nodes) linked with segments (vertices). Green dashed line represents the cut performed by GC algorithm. }
+    \label{graph_image}
+\end{figure}
+
+In this figure, the reference and models \textalpha~and \textbeta~are represented as a matrix where each square represents a grid cell containing the variable value. We can represent this matrix as a graph where a grid cell corresponds as a node (circle) and the adjacency of two grid cells corresponds as a vertice (segment). Each node is labelled, e.g. each grid cell belongs to a model. The third part of the figure, called label attribution, represents the optimal combination. The two models are combined and this combination is represented by the green dashed line, called a cut. The final step is to transform the graph into a map, where each labelled node corresponds to a grid cell containing a model value. To combine the models, GC seeks the combination which loses the less information possible. This information is called energy and is detailed in Markov Random Fields literature (Li, 2009, 2012). 
+
+As already stated, labels correspond to models output, so that the GC algorithm applied to combine model outputs will select models per grid cell. If we are in a two models situation, like the example presented in figure \ref{graph_image}, GC will provide the optimal result. But since we are working in an MME framework, we will work with more than two models. Therefore, GC will be applied in a iterative way, based on the \textalpha-\textbeta~swap move, provided by Boykov et al. (1998, 1999). This move, since it is based on GC, will optimize the energy. Energy is made of two terms : data energy and smooth energy where a labeling (f) seeks to minimize the energy E :
+
+\begin{equation}
+    E(f) = E_{data}(f) + E_{smooth}(f)
+\end{equation}
+
+ In our case, data energy represents bias between the GC result and the reference used, such as a labeling \textit{f} will minimize
+
+\begin{equation}
+    E_{data}(f) = \sum_{p \in P}^{}D_p(f_p)
+\end{equation}
+with $D_p(f_p)$ equals to $GC_p(M) - ref_p$ where $GC_p(M)$ corresponds to a grid cell \textit{p} in a matrix \textit{P }attributed to the model \textit{M} and $ref_p$ the same grid cell \textit{p} in the reference.
+
+Smooth energy represents the quality of the cuts in the GC. We will call this quality smoothness during this work. Here, a labeling \textit{f} will minimize
+
+\begin{equation}
+   E_{smooth}(f) = \sum_{\left \{ p,q \right \} \in N}^{}V_{\left \{ p,q \right \}}(f_p,f_q)
+\end{equation}
+where \textit{N} is the set of adjacent grid cells. $V_{\left \{ p,q \right \}}$ equals to the value of the vertice in the graph, e.g. the sum of the two nodes on each end of the vertice. In the \textalpha-\textbeta~swap context, if we have a model \textalpha~and a model \textbeta, the algorithm will attribute a model to a grid point, such that the result will be optimal in terms of biases and smoothness. But in our case, since we are working with an MME, a new type of model called \textgamma~ will be added. For example, if we work with \textit{n} model, we consider the one model as \textalpha, an other model as \textbeta, and the rest of the models as \textgamma. During the first iteration, the algorithm will swap model attribution between the two models defined as \textalpha~and \textbeta. During the second iteration, the models defined as \textalpha~and \textbeta will change and perform the swapping. These iterations occurs until the energy is minimized.
+
+\subsection{Design of experiment}
+\subsubsection{Perfect model and reanalysis}
+
+During this work, we assume that models are statistically indistinguishable from the truth. Since models are based on a statistical distribution, the truth comes from the same distribution. During this work, we consider that one model can be representing a possible truth. The objective is to reconstruct its climatology for the end of the century by combining the other models with the graph cut methodology. To test the sensitivity of our results to the chosen reference, each model is used as a reference once. We calibrate the MME on a present period (1979-2008) and we evaluate our results on a future period (2071-2100). It permits to test the robustness of our method with different scenarii of potential climate evolution.
+
+But since the perfect model approaches uses models as reference, we also compared our method with MMM using ERA5 as reference. Even if reanalysis such as ERA5 are not observations but corrections based on the historical measured values, we will consider ERA5 as observations here. Therefore, we will have a comparison based on "real" values.
+
+
+\subsubsection{GC present and GC hybrid}
+
+To improve the smoothness term of our algorithm, we created two types of GC : GC present and GC hybrid. GC present is created by setting the data energy and the smooth energy with present data (1979-2008). It will provide a single label attribution for different periods, assuming that the spatial consistency of models will remain the same in the future. The GC hybrid is created by setting the data energy with present data, but the smooth energy with future data (2071-2100). We force the algorithm to reduce the eventual stitches due to the future climatology to increase the smoothness. The two GCs, even if they are quite similar, are slightly different. Finally, a third GC was created : GC future. Unlike GC present, both data energy and smooth energy are set with future data. It will be used as a benchmark for GC present and GC hybrid. Since the perfect model approach allows us to use models as references, we can have references for the future period, hence biases. Since GC future will be calibrated on these future biases, it will be the optimal result we can get using this method.
+
+Figure 3 represents the label attribution for all three GCs, using the model output CNRM-CM5 as a reference. As expected, GC future has the lowest data and smooth energy. GC present has a lower data energy than GC hybrid, but GC present has a higher smooth energy, which means that even if the overall bias is higher in the GC hybrid, the smoothness is better.
+
+\begin{figure}[h!]
+  \centering
+  \begin{subfigure}{0.45\textwidth}
+    \includegraphics[width=\linewidth]{label_attrib_gc_present.png}
+    \caption{GC present.}
+  \end{subfigure}
+  \begin{subfigure}{0.45\textwidth}
+    \includegraphics[width=\linewidth]{label_attrib_gc_hybrid.png}
+    \caption{GC hybrid.}
+  \end{subfigure}
+  \begin{subfigure}{0.5\textwidth}
+    \includegraphics[width=\linewidth]{label_attrib_gc_future.png}
+    \caption{GC future.}
+  \end{subfigure}
+  \caption{Label attribution obtained by the \textalpha-\textbeta~swap algorithm for the GC present (a), GC hybrid (b) and GC future (c) with CNRM-CM5 as reference. Each color represents a model from the ensemble used to create the GC.}
+  \label{gc_present_hybrid}
+\end{figure}
+
+\section{Results}
+
+During the following section, some results will only be displayed for one reference, the CNRM-CM5 model. We chose this model because it is the model among our ensemble being the closest to the reanalysis ERA5. Therefore, it presents the closest results to the observations. Furthermore, when the conclusions between precipitations and temperature will be the same, only temperature results will be shown.
+
+\subsection{Perfect model}
+
+First of all, since we were working MME framework, we tried to determine if the models order had a significant impact on the GC results. We tested 100 random combinations for a single reference to estimate the range of data and smooth energy. Since the range is under 5\%  between the highest and the lowest result, we concluded that the order \textit{a priori} of models in the MME had no influence on the results. Hence, we kept the same order during the rest of this study.
+
+We applied the \textalpha-\textbeta~swap algorithm until convergence, e.g. the energy can not be minimized anymore, giving us a label attribution grid. The weights for data and smooth energy was tested to find an optimal pair of weights so the overall smoothness and the minimization were taken into consideration (figure \ref{opti_weights}).
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=\textwidth]{data_smooth_norm.png}
+\caption{Data (red) and smooth energy (green) normalized and summed (dashed blue). Results are obtained using standard normalization, equals to $\frac{x_i-x_{min}}{x_{max}-x_{min}}$. This permits to transform two variables with different ranges into values between 0 and 1. p0 refers to the weight given to the data energy. Smooth energy weight is set to 1.}
+\label{opti_weights}
+\end{figure}
+
+
+It appears that for TAS and PR, the optimal pair of weights is around 1 for both data and smooth energy, so the rest of the tests will be with this pair of weights. Since the initial parameters are set, we can now analyze MME and GC results.
+
+If we look at the bias aspect, we compare several measurements such as the mean absolute error (MAE), which is equal to
+
+\begin{equation}
+   MAE = \frac{\sum_{i=1}^{n}\left | y_i-x_i \right |}{n}
+\end{equation}
+where $| y_i-x_i |$ is equal to the bias between the GC or MMM and the reference. 
+We also looked at the overall distribution, which will be represented as boxplots. First of all, we compared the MAE between our different GCs and the MME, represented in figure \ref{mse_mme_minbias}. 
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=\textwidth]{mae_gc_mme_minbias.jpeg}  
+\caption{Mean absolute error (MAE) represented for GC present (red), GC hybrid (green), GC future (blue), MME (black) and the minimum bias attribution (purple). X axis corresponds to the model used as reference. Y axis represents the MAE in Celsius degrees.}
+\label{mse_mme_minbias}
+\end{figure}
+
+This figure represents for each model used as reference (X-axis) the MAE for the GC present (red), the GC hybrid (green), the GC future (blue) the MME (black) the minimum bias per grid point (purple). We can see that the three GCs are quite close, and organized as expected, except when IPSL-CM5A-LR is used as a reference. If we look at the results when CNRM-CM5 is used as reference, the GC future has the best MAE, equals to 0.85°C. Then comes the GC present with a MAE equals to 1.01°C. Next, we have the GC future with a MAE equals to 1.1°C. Finally, we have the MMM with a MAE equals to 1.93°C. We can conclude that all three GC perform better than MMM, regardless of the model used as reference.
+
+
+Next, we looked at the values overall distribution with GCs and MME, represented in figure \ref{boxplot_bias}. This figure represents the overall distribution of the temperature biases as boxplots with CNRM-CM5 as reference (the four other boxplots will be added in the supplementary). The edges of the box represent the twenty-fifth and seventy-fifth percentile of the distribution. The bold line inside the box represents the fiftieth percentile of the distribution, e.g. the median. The upper tail represents the largest value within 1.5 times the range between the upper box edge, and the lower tail the lowest value withing 1.5 times the range below the lower box edge. Dots represents outliers, e.g. value above the tails. Finally, a dashed line representing the 0 value was drawn to help visualising the results. We can see that all three GCs have a closer distribution to the used reference than the MMM, regardless of the model used as reference.
+
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=\textwidth]{bias_boxplot.jpeg}
+\caption{Boxplots representing, from left to right, temperature bias, for GC present, GC hybrid, GC future and MME. Bold line represents the median, box edges represent the first and third quartile and tails represent the largest value within 1.5 times range between box edges above third quartile or below first quartile. Dots represents outliers. Dashed line represent 0.}
+\label{boxplot_bias}
+\end{figure}
+
+This overall improvement between GCs and MMM to represent the used reference can be visualized through temperature bias maps too, represented in figure \ref{bias_tas}. In this figure, we can see that the MMM overestimates the temperature on most of the planet, while GCs are representing this in a better way. If we compare GC present and GC hybrid, even if they are similar, we can see that GC hybrid looks closer to GC future in certain areas, such as the western part of the Indian ocean, where a negative bias is present in GC hybrid and future, but not in GC present. But overall, GCs have lower biases than MMM.
+
+\pagebreak
+
+\begin{figure}[h!]
+  \centering
+  \begin{subfigure}[b]{0.45\textwidth}
+    \includegraphics[width=\linewidth]{bias_map_gc_present.png}
+    \caption{Temperature bias for GC present.}
+  \end{subfigure}
+  \begin{subfigure}[b]{0.45\textwidth}
+    \includegraphics[width=\linewidth]{bias_map_gc_hybrid.png}
+    \caption{Temperature bias for GC hybrid.}
+  \end{subfigure}
+  \begin{subfigure}[b]{0.45\textwidth}
+    \includegraphics[width=\linewidth]{bais_map_gc_future.png}
+    \caption{Temperature bias for GC future.}
+  \end{subfigure}
+  \begin{subfigure}[b]{0.45\textwidth}
+    \includegraphics[width=\linewidth]{bias_map_mme.png}
+    \caption{Temperature bias for MMM.}
+  \end{subfigure}
+  \caption{Temperature bias (°C) using CNRM-CM5 as a reference for GC present (a), GC hybrid (b), GC future (c) and MME (d).}
+  \label{bias_tas}
+\end{figure}
+
+\subsection{Spatial consistency}
+
+We tried to compare the spatial quality of GC with MMM. The main idea of this test is to show that, besides an overall smoothness, GC can still well represent the spatial distribution of the reference. To evaluate this performance, we used a gradient bias \textit{G}, which follows
+
+\begin{equation}
+G = \sum_{lat \in P}^{}\sum_{lon \in P}^{} \left ( \Delta_{ref_{\left (lat,lon \right)}} - \Delta_{GC_{\left (lat,lon \right)}} \right )^2
+\end{equation}
+
+where $\Delta_{ref_{\left (lat,lon \right)}}$ and $\Delta_{GC_{\left (lat,lon \right)}}$ corresponds to the sum of the mean squared error (MSE) in the 4-neighborhood of the grid cell located at the coordinates (\textit{lon,lat}), which is equal to
+
+\begin{equation}
+    MSE = \frac{1}{n}\sum_{i=1}^{n}(y_i - x_i)^2
+\end{equation}
+with $(y_i-x_i)^2$ equals to the squared value of the bias. An exemple of this 4-neighborhood is represented in (figure \ref{4-neighbors}). The sum of the difference between a grid cell located at coordinates (\textit{i,j}) and each grid cell represented in the figure.
+\pagebreak
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.4\textwidth]{4_neighbors.png}
+    \caption{Example of the 4-neighbors of a grid cell located at coordinates (\textit{i,j})}
+    \label{4-neighbors}
+\end{figure}
+
+To visualize the gradient bias, we represented it as a map in figure \ref{err_grad}, where each grid point contains the sum of the MSE between its 4-neighbors. This figure shows that MMM outperform GCs in term of gradient bias, which means that MMM provides a better spatial consistency of the reference than GCs. GCs, even if they take into consideration the overall smoothness of the result, can have trouble to replicate the spatial consistency of the reference. Therefore, some natural high gradient bias present in the reference could not be replicate in the GCs.
+
+\begin{figure}[h!]
+  \centering
+  \begin{subfigure}[b]{0.45\textwidth}
+    \includegraphics[width=\linewidth]{gc_present_grad.png}
+    \caption{GC present.}
+  \end{subfigure}
+  \begin{subfigure}[b]{0.45\textwidth}
+    \includegraphics[width=\linewidth]{gc_hybrid_grad.png}
+    \caption{GC hybrid.}
+  \end{subfigure}
+  \begin{subfigure}[b]{0.45\textwidth}
+    \includegraphics[width=\linewidth]{gc_future_grad.png}
+    \caption{GC future.}
+  \end{subfigure}
+  \begin{subfigure}[b]{0.45\textwidth}
+    \includegraphics[width=\linewidth]{mme_grad.png}
+    \caption{MME.}
+  \end{subfigure}
+  \caption{Gradient bias for GC present (a), GC hybrid (b), GC future (c) and MME (d).}
+  \label{err_grad}
+\end{figure}
+
+
+
+\subsection{GC using reanalysis}
+
+After comparing GC and MMEs in a perfect model context, we will now confront the two methods to reanalysis. Since we are using observations, we will not be able to represent GC future, since it requires future biases to calibrate it. But since GC present and GC hybrid are using the present biases, they can be created.
+
+Figure \ref{label_attrib_era} presents the label attribution maps using ERA5 as reference for the GC present and the GC hybrid. Since we are not using a model among the ensemble as a reference, we now have 5 models to combine. This results in a decrease of the data energy but an increase the smooth energy compared to the perfect model tests, where we only had 4 models to combine.
+
+\begin{figure}[h!]
+    \begin{subfigure}{0.5\textwidth}
+    \includegraphics[width=\linewidth]{label_attrib_gc_present_era.png}
+    \caption{GC present.}
+  \end{subfigure}
+  \begin{subfigure}{0.45\textwidth}
+    \includegraphics[width=\linewidth]{label_attrib_gc_hybrid_era.png}
+    \caption{GC hybrid.}
+  \end{subfigure}
+  \caption{Label attribution maps for GC present (a) and GC hybrid (b) using ERA5 as reference.}
+  \label{label_attrib_era}
+\end{figure}
+
+In terms of MAE, the two GCs still outperform the MMM, where the MAE for the GC present equals to 0.79°C, 0.8°C for the GC hybrid and 1.31°C for the MMM. In terms of overall distribution, we can see that GCs boxplots are closer 0, therefore closer to ERA5, than for the MMM. We can conclude that both GCs perform better than the MMM while using observation as reference.
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.9\textwidth]{boxplot_bias_era.jpeg}
+\caption{Boxplots representing, from left to right, temperature bias, for GC present, GC hybrid and MME using ERA5 as reference. Bold line represents the median, box edges represent the first and third quartile and tails represent the largest value within 1.5 times range between box edges above third quartile or below first quartile. Dots represents outliers. Dashed line represents 0.}
+\label{boxplot_era}
+\end{figure}
+
+Figure \ref{bias_era} represents the temperature map of ERA5 and the temperature bias maps of GC present, GC hybrid and MMM using ERA5 as reference. We can see that MMM overestimates the temperature in the same way as presented during the perfect model section.
+
+\begin{figure}[h!]
+   \begin{subfigure}[b]{0.45\linewidth}
+    \includegraphics[width=\linewidth]{bias_gc_present_cnrm_era.png}
+    \caption{GC present.}
+  \end{subfigure}
+  \begin{subfigure}[b]{0.45\linewidth}
+    \includegraphics[width=\linewidth]{bias_gc_hybrid_cnrm_era.png}
+    \caption{GC hybrid.}
+  \end{subfigure}
+  \begin{subfigure}[b]{0.45\linewidth}
+    \hspace{4cm}
+    \includegraphics[width=\linewidth]{bias_mme_era.png}
+    \caption{MMM.}
+  \end{subfigure}
+  \caption{Label attribution maps for GC present (a) and GC hybrid (b) using ERA5 as reference.}
+  \label{bias_era}
+\end{figure}
+
+
+\pagebreak
+
+\section{Discussion and conclusion}
+
+The main goal of this work was to increase the future climatology while combining model outputs based on a MME approach. We saw that GCs (present and hybrid) perform better than MMM for TAS and PR on the end of the century. We created a method which take into consideration spatial consistency of models output to decrease the biases, while avoiding unnatural stitches in the final combination. In terms of biases, both GCs outperformed equal weighting MMM, in terms of MAE, biases and overall distribution. In terms of overall smoothness, even if GC maps are smooth, the label attribution contains a certain amount of stitches. This explains why the spatial consistency of GCs is slightly lower than MMEs. If a study wants to preserve gradients and spatial consistency of MMEs, GC is not the best method. But, if the study is focused on future impacts of the climate, our method can outperform the equal weighting MMM approach.
+
+This first application of GC in model combination is positive, and can be enhanced on several points.
+
+First of all, it can be applied to multivariate studies. Multivariate approach will allow GC to preserve dependencies between variables, such as temperature and precipitations for example. Therefore, based on the weights used to evaluate two different variables, GC would be able to give different types of results. If the goal is to improve the future climatology quite precisely in a certain area, setting GC with multivariate data could enhance the final result compared to univariate GC based only on precipitations. Even if some MMEs methods are already doing multivariate studies (Collins et al., 2011 ; Mendlik \& Gobiet, 2016), this could be the first approach to develop.
+
+In terms of dependencies, GC can be applied to seasonal values. Since we used annual mean during this study, using seasonal means will provide different results, and these results can be combined too. The result might be better than results presented in this paper.
+
+Next, bias correction can be applied to GC results. Bias correction can be applied on univariate studies, like this paper, to adjust metrics such as mean (Xu, 1999) or variance (Berg et al., 2012) or to multivariate studies (François et al., 2020). Bias correction can be applied to models outputs before setting up GC. Since the data set used to calibrate GC should be enhanced, the GC result with bias correction will likely be better than without bias correction.
+
+Another perspective would be to apply GC locally. For exemple, if the main goal is to evaluate temperature changes for the end of the century in Europe or Asia, reducing the size of the area studied could give different results than GC presented in this work. 
+
+In the same context, GC can also be applied to Regional Climate Models (RCM). Even if RCM are based on GCM, the resolution is way higher. Hence, local structures could emerge and provide different results from global GC or regional GC using GCM. To conclude, GC is a promising method and even if this is the first study based on climate modelling, since the method developed is based on MMEs, every result obtained with MMEs can be applied to GC. 
+
+
+\end{linenumber}
+\section{References}
+
+Auger, J. D., Birkel, S. D., Maasch, K. A., Mayewski, P. A., & Schuenemann, K. C. (2018). An ensemble mean and evaluation of third generation global climate reanalysis models. Atmosphere, 9(6), 236.
+
+Berg, P., Feldmann, H., & Panitz, H. J. (2012). Bias correction of high resolution regional climate model data. Journal of Hydrology, 448, 80-92.
+
+Berrisford, P., Dee, D., Poli, P., Brugge, R., Fielding, K., Fuentes, M., Kallberg, P., Kobayashi, S., Uppala, S. and Simmons, A., (2011) The ERA-Interim archive, version 2.0. ERA report series. 1. Technical Report. ECMWF pp23.
+
+Bhat, K.S., Haran, M., Terando, A. et al. Climate Projections Using Bayesian Model Averaging and Space–Time Dependence. JABES 16, 606–628 (2011). https://doi.org/10.1007/s13253-011-0069-3
+
+Brunner, L., Pendergrass, A. G., Lehner, F., Merrifield, A. L., Lorenz, R., \& Knutti, R. Reduced global warming from CMIP6 projections when weighting models by performance and independence. (2020, pre-print)
+
+Boykov, Y., O. Veksler and R. Zabih, "Markov random fields with efficient approximations," Proceedings. 1998 IEEE Computer Society Conference on Computer Vision and Pattern Recognition (Cat. No.98CB36231), Santa Barbara, CA, 1998, pp. 648-655, doi: 10.1109/CVPR.1998.698673.
+
+
+---(1999). "Fast approximate energy minimization via graph
+cuts." IEEE Transactions on Pattern Analysis and Machine Intelligence 23(11): 1222-1239.
+
+Boykov, Y., & Funka-Lea, G. (2006). Graph cuts and efficient ND image segmentation. International journal of computer vision, 70(2), 109-131.
+
+Casanova, S., \& Ahrens, B. (2009). On the weighting of multimodel ensembles in seasonal and short-range weather forecasting. Monthly weather review, 137(11), 3811-3822.
+
+Collins, M., Booth, B. B., Bhaskaran, B., Harris, G. R., Murphy, J. M., Sexton, D. M., & Webb, M. J. (2011). Climate model errors, feedbacks and forcings: a comparison of perturbed physics and multi-model ensembles. Climate Dynamics, 36(9-10), 1737-1766.
+
+Ford, L.R., and D. R. Fulkerson (1956), Maximal Flow through a network, \textit{Can. J. Math., 8}(3), 399-404
+
+François, B., Vrac, M., Cannon, A. J., Robin, Y., & Allard, D. (2020). Multivariate bias corrections of climate simulations: which benefits for which losses?. Earth System Dynamics, 11(2), 537-562.
+
+Giorgi, Filippo, and Linda O. Mearns. "Calculation of average, uncertainty range, and reliability of regional climate changes from AOGCM simulations via the “reliability ensemble averaging”(REA) method." Journal of Climate 15.10 (2002): 1141-1158.
+
+Hawkins, E., & Sutton, R. (2009). The potential to narrow uncertainty in regional climate predictions. Bulletin of the American Meteorological Society, 90(8), 1095-1108.
+
+Hersbach, H. (2016). The ERA5 Atmospheric Reanalysis. AGUFM, 2016, NG33D-01.
+
+Knutti, R., R. Furrer, C. Tebaldi, J. Cermak and G. A. Meehl (2010). "Challenges in combining
+projections from multiple climate models." Journal of Climate 23(10): 2739-275 22(3): 277-286.
+
+---, Sedláček, J., Sanderson, B. M., Lorenz, R., Fischer, E. M., & Eyring, V. (2017). A climate model projection weighting scheme accounting for performance and interdependence. Geophysical Research Letters, 44(4), 1909-1918.
+
+Kunreuther, H., Heal, G., Allen, M., Edenhofer, O., Field, C. B., \& Yohe, G. (2013). Risk management and climate change. Nature Climate Change, 3(5), 447-450.
+
+Kwatra, V., Schödl, A., Essa, I., Turk, G., & Bobick, A. (2003). Graphcut textures: image and video synthesis using graph cuts. ACM Transactions on Graphics (ToG), 22(3), 277-286.
+
+Li, S. Z. (2009). Markov random field modeling in image analysis. Springer Science & Business Media.
+
+Li, S. Z. (2012). Markov random field modeling in computer vision. Springer Science & Business Media.
+
+Li, X., Mariethoz, G., Lu, D., & Linde, N. (2016). Patch‐based iterative conditional geostatistical simulation using graph cuts. Water Resources Research, 52(8), 6297-6320.
+
+Mariethoz, G., & Caers, J. (2014). Multiple-point geostatistics: stochastic modeling with training images. John Wiley & Sons.
+
+Meehl, G. A., Boer, G. J., Covey, C., Latif, M., \& Stouffer, R. J. (2000). The coupled model intercomparison project (CMIP). Bulletin of the American Meteorological Society, 81(2), 313-318.
+
+Mendlik, T., & Gobiet, A. (2016). Selecting climate simulations for impact studies based on multivariate patterns of climate change. Climatic change, 135(3-4), 381-393.
+
+Merrifield, A., Brunner, L., Lorenz, R., \& Knutti, R. A weighting scheme to incorporate large ensembles in multi-model ensemble projections. (2019, pre-print)
+
+Olson, R., Y. Fan, and J. P. Evans (2016), A simple method for Bayesian model averaging of regional climate model projections: Application to southeast Australian temperatures, Geophys. Res.Lett.,43, 7661–7669, doi:10.1002/2016GL069704.
+
+Salah, M. B., Mitiche, A., & Ayed, I. B. (2010). Multiregion image segmentation by parametric kernel graph cuts. IEEE Transactions on Image Processing, 20(2), 545-557.
+
+Sanderson, B. M., and Coauthors, 2008: Constraints on model response to greenhouse gas forcing and the role of subgrid-scale processes. J. Climate, 21, 2384–2400.
+
+Schmidt, M., & Alahari, K. (2011). Generalized fast approximate energy minimization via graph cuts: Alpha-expansion beta-shrink moves. arXiv preprint arXiv:1108.5710.
+
+Solomon, S., G. K. Plattner, R. Knutti, and P. Friedlingstein, 2009: Irreversible climate change due to carbon dioxide emissions. Proc. Natl. Acad. Sci. USA, 106, 1704–1709. 
+
+Taylor, K. E., R. J. Stouffer, and G. A. Meehl, 2012: An Overview of CMIP5 and the Experiment Design. Bull. Amer. Meteor. Soc., 93, 485–498, https://doi.org/10.1175/BAMS-D-11-00094.1.
+
+Tebaldi, C., \& Knutti, R. (2007). The use of the multi-model ensemble in probabilistic climate projections. Philosophical transactions of the royal society A: mathematical, physical and engineering sciences, 365(1857), 2053-2075.
+
+Wanders, N., \& Wood, E. F. (2016). Improved sub-seasonal meteorological forecast skill using weighted multi-model ensemble simulations. Environmental Research Letters, 11(9), 094007.
+
+Weigel, A. P., Knutti, R., Liniger, M. A., & Appenzeller, C. (2010). Risks of model weighting in multimodel climate projections. Journal of Climate, 23(15), 4175-4191.
+
+Xu, C. Y. (1999). From GCMs to river flow: a review of downscaling methods and hydrologic modelling approaches. Progress in physical Geography, 23(2), 229-249.
+\pagebreak
+
+\appendixpage
+\begin{appendix}
+
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=\textwidth]{tas_cnrm.jpeg}
+    \caption{Temperature map (°C) of the model CNRM-CM5 for the period 1979-2008}
+    \label{fig:my_label}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=\textwidth]{tas_giss.jpeg}
+    \caption{Temperature map (°C) of the model GISS-E2-H for the period 1979-2008}
+    \label{fig:my_label}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=\textwidth]{tas_ipsl.jpeg}
+    \caption{Temperature map (°C) of the model IPSL-CM5A-LR for the period 1979-2008}
+    \label{fig:my_label}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=\textwidth]{tas_mpi.jpeg}
+    \caption{Temperature map (°C) of the model MPI-ESM-LR for the period 1979-2008}
+    \label{fig:my_label}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=\textwidth]{tas_noresm.jpeg}
+    \caption{Temperature map (°C) of the model NorESM1-M for the period 1979-2008}
+    \label{fig:my_label}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=\textwidth]{pr_cnrm.jpeg}
+    \caption{Precipitation map (mm/d) of the model CNRM-CM5 for the period 1979-2008}
+    \label{fig:my_label}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=\textwidth]{pr_giss.jpeg}
+    \caption{Precipitation map (mm/d) of the model GISS-E2-H for the period 1979-2008}
+    \label{fig:my_label}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=\textwidth]{pr_ipsl.jpeg}
+    \caption{Precipitation map (mm/d) of the model IPSL-CM5A-LR for the period 1979-2008}
+    \label{fig:my_label}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=\textwidth]{pr_mpi.jpeg}
+    \caption{Precipitation map (mm/d) of the model MPI-ESM-LR for the period 1979-2008}
+    \label{fig:my_label}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=\textwidth]{pr_noresm.jpeg}
+    \caption{Precipitation map (mm/d) of the model NorESM1-M for the period 1979-2008}
+    \label{fig:my_label}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=\textwidth]{boxplot_bias_cv_giss.jpeg}
+    \caption{Boxplot of the temperature bias (°C) of GCs and MMM using GISS-E2-H as reference}
+    \label{fig:my_label}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=\textwidth]{boxplot_bias_cv_ipsl.jpeg}
+    \caption{Boxplot of the temperature bias (°C) of GCs and MMM using IPSL-CM5A-LR as reference}
+    \label{fig:my_label}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=\textwidth]{boxplot_bias_cv_mpi.jpeg}
+    \caption{Boxplot of the temperature bias (°C) of GCs and MMM using MPI-ESM-LR as reference}
+    \label{fig:my_label}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=\textwidth]{boxplot_bias_cv_noresm.jpeg}
+    \caption{Boxplot of the temperature bias (°C) of GCs and MMM using NorESM1-M as reference}
+    \label{fig:my_label}
+\end{figure}
+
+\end{appendix}
+\end{document}
