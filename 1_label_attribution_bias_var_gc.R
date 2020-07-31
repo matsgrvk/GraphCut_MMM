@@ -1,8 +1,8 @@
 var="tas" #### Variable utilisée : "tas" ou "pr"
 
-setwd("input/")
-load("models_list.rdata")
-load(paste0("load_",var,"_cv.rdata"))
+load("input/models_list.rdata")
+load(paste0("input/load_",var,"_cv.rdata"))
+
 
 ##### GraphCut ######
 
@@ -10,7 +10,7 @@ model_names <- TAS_MODELS[c(1,3,4,5,7,8,11,12,13,16,17,20,22,24,26,30,31,33,34,3
 
 gc_result <- list("vector",length(model_names)) ### List of label attribution matrices obtained with GraphCut
 
-source("gc_function.R")
+source("functions/gc_function.R")
 
 for(m in 1:length(model_names)){
   
@@ -41,7 +41,7 @@ bias_var_gc_result <- list("vector",length(gc_result)) ### List of variable and 
 
 for(m in 1:length(gc_result)){
   
-  source("bias_var_function.R")
+  source("functions/bias_var_function.R")
   
   ref_future <- get(paste0("tas_",model_names[[m]],"_2100"))
   var_future <- array(0,c(nrow = nrow(ref),ncol = ncol(ref),length(model_names)))
@@ -53,7 +53,7 @@ for(m in 1:length(gc_result)){
   var_future <- var_future[,,-m]
   
   bias_var_gc_result[[m]] <- bias_var(var.future = var_future,
-                              gc.data = gc_result[[m]])
+                                      data = gc_result[[m]]$`Label attribution`)
 }
 
 system("rm tmp_gc_result.rdata")
@@ -66,7 +66,7 @@ save(gc_result, bias_var_result, file="label_attribution_bias_var_gc.rdata")
 
 mmm_result <- list("vector",length(model_names)) ### List of label attribution matrices obtained with GraphCut
 
-source("mmm_function.R")
+source("functions/mmm_function.R")
 
 for(m in 1:length(model_names)){
   
@@ -84,7 +84,7 @@ for(m in 1:length(model_names)){
   var_future <- var_future[,,-m]
   
   mmm_result[[m]] <- mmm(var.present = var_present,
-                             var.future = var_future)
+                         var.future = var_future)
 }
 
 save(mmm_result, file="bias_var_mmm.rdata")
@@ -95,7 +95,7 @@ save(mmm_result, file="bias_var_mmm.rdata")
 
 min_bias_result <- list("vector",length(model_names)) ### List of label attribution matrices obtained with GraphCut
 
-source("min_bias_function.R")
+source("functions/min_bias_function.R")
 
 for(m in 1:length(model_names)){
   
@@ -113,7 +113,7 @@ for(m in 1:length(model_names)){
   var_future <- var_future[,,-m]
   
   min_bias_result[[m]] <- min_bias(var.present = var_present,
-                         var.future = var_future)
+                                   var.future = var_future)
 }
 
 save(min_bias_result, file="tmp_min_bias_result.rdata")
@@ -122,7 +122,7 @@ bias_var_min_bias_result <- list("vector",length(min_bias_result)) ### List of v
 
 for(m in 1:length(min_bias_result)){
   
-  source("bias_var_function.R")
+  source("functions/bias_var_function.R")
   
   ref_future <- get(paste0("tas_",model_names[[m]],"_2100"))
   var_future <- array(0,c(nrow = nrow(ref),ncol = ncol(ref),length(model_names)))
@@ -133,8 +133,8 @@ for(m in 1:length(min_bias_result)){
   
   var_future <- var_future[,,-m]
   
-  bias_var_result[[m]] <- bias_var(var.future = var_future,
-                                   gc.data = min_bias_result[[m]])
+  bias_var_min_bias_result[[m]] <- bias_var(var.future = var_future,
+                                            data = min_bias_result[[m]])
 }
 
 system("rm tmp_min_bias_result.rdata")
