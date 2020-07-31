@@ -1,0 +1,1 @@
+1_extractd_ata_ciclad.R : uses the functions CDO_TAS and CDO_PR to transform monthly mean historical and rcp 8.5 model data outputs from CMIP5 exercise to a 30-year climatology file with a resolution of 1°x1° obtained using bilinear interpolation.
