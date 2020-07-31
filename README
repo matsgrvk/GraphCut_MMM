@@ -4,4 +4,4 @@ Application of the graph cut approach during my master 2 internship in the ESTIM
 
 2_plot_graphs_maps.R : realisation of several tests. Code generates graphs with the same x-axis representing the model used as reference. Y-axis can represent the mean absolute error (MAE), the median of the MAE, the mean of the gradient bias (gradient bias = RMSE of the 4-neighbors of a given grid cell) and the median of the gradient bias. The code generates maps for the mean gradient bias for each reference used.
 
-Each folders contains a README which details its content.
+Each folder contains a README which details its content.
