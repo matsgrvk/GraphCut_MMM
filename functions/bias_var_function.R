@@ -1,4 +1,4 @@
-bias_var <- function(var.future,gc.data){
+bias_var <- function(var.future,data){
   width = ncol(ref)
   height = nrow(ref)
   
@@ -11,7 +11,7 @@ bias_var <- function(var.future,gc.data){
   var_gc <- bias_gc <- matrix(0,nrow = height,ncol = width)
   
   for(l in 0:(length(model_names)-2)){
-    islabel <- which(gc.data == l)
+    islabel <- which(data == l)
     var_gc[islabel] <- var_future[,,(l+1)][islabel]
     bias_gc[islabel] <- bias_future[,,(l+1)][islabel]
   }
