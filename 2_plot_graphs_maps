@@ -1,4 +1,4 @@
-list.of.packages <- c("ncdf4","fields","maps","mapdata","RcppXPtrUtils","devtools","paramtest","overlapping","lattice","reshape2")
+list.of.packages <- c("fields")
 new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
 if(length(new.packages)) install.packages(new.packages,repos = "http://cran.us.r-project.org")
 lapply(list.of.packages, library, character.only = TRUE)
@@ -229,10 +229,9 @@ for(i in 1:length(mean_grad_label_list)){ ### Plot the gradient bias mean for ea
              ylab='',
              yaxt='n',
              col=rainbow(5),
-             breaks= seq(0.5, 5.5, 1)
-             # axis.args=list( at=1:length(colorBreaks), labels=paste0("> ",colorBreaks)),
-             # lab.breaks = names(colorBreaks)
-             )
+             breaks= seq(0.5, 5.5, 1),
+             axis.args=list( at=1:length(colorBreaks), labels=paste0("> ",colorBreaks)))
+             # lab.breaks = names(colorBreaks))
   mtext(text_list[[i]],
         side = 4)
   map("world2",add=T)
