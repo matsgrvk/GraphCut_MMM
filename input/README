@@ -1,0 +1,4 @@
+Input folder :
+
+Dimensions : contains two objects (height and width). Height represents the number of longitudes (360) and width the number of latitudes (181). Each grid cell is remapped with bilinear interpolation to a 1°x1°.
+Load tas and pr : contains the 30-year climatology (temperature and precipitation) for two periods : 1979-2008 and 2071-2100.
