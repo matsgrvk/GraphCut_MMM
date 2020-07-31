@@ -26,13 +26,13 @@ mmm <- function(var.present,var.future){
   tmp_var_mmm <- tmp_bias_mmm <- array(0,c(nrow = height,ncol = width,length(model_names)))
   var_mmm <- bias_mmm <-  matrix(0, nrow = height, ncol = width)
   
-  for(i in 1:length(var_list_future)){
-    tmp_tas_mmm[,,i] <- var_future[[i]]
+  for(i in 1:(length(model_names)-1)){
+    tmp_var_mmm[,,i] <- var_future[[i]]
   }
   
-  var_mmm <- apply(tmp_tas_mmm, 1:2, mean)
+  var_mmm <- apply(tmp_var_mmm, 1:2, mean)
   
-  for(i in 1:length(bias_list_future)){
+  for(i in 1:(length(model_names)-1)){
     tmp_bias_mmm[,,i] <- bias_future[[i]]
   }
   
