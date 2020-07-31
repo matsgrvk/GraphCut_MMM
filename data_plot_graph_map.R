@@ -2,6 +2,7 @@ var = "tas"
 
 load("input/models_list.rdata")
 load(paste0("input/load_",var,"_cv.rdata"))
+load("input/dimensions.rdata")
 setwd("output/")
 load(paste0("label_attrib_bias_",var,"_gc_present.rdata"))
 load(paste0("label_attrib_bias_",var,"_gc_hybrid.rdata"))
@@ -10,7 +11,6 @@ load(paste0("label_attrib_bias_",var,"_gc_hybrid_strong.rdata"))
 load(paste0("label_attrib_bias_",var,"_gc_future.rdata"))
 load(paste0("bias_",var,"_mmm.rdata"))
 load(paste0("label_attrib_bias_",var,"_min_bias.rdata"))
-load("dimensions.rdata")
 setwd('..')
 
 model_names <- TAS_MODELS[c(1,3,4,5,7,8,11,12,13,16,17,20,22,24,26,30,31,33,34,37),2] #### Names of models used in the ensemble
