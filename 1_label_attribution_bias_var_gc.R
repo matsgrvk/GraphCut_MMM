@@ -39,9 +39,9 @@ save(gc_result, file="tmp_gc_result.rdata")
 
 bias_var_gc_result <- list("vector",length(gc_result)) ### List of variable and variable biases obtained with GraphCut
 
+source("functions/bias_var_function.R")
+
 for(m in 1:length(gc_result)){
-  
-  source("functions/bias_var_function.R")
   
   ref_future <- get(paste0("tas_",model_names[[m]],"_2100"))
   var_future <- array(0,c(nrow = nrow(ref),ncol = ncol(ref),length(model_names)))
@@ -120,9 +120,9 @@ save(min_bias_result, file="tmp_min_bias_result.rdata")
 
 bias_var_min_bias_result <- list("vector",length(min_bias_result)) ### List of variable and variable biases obtained with GraphCut
 
+source("functions/bias_var_function.R")
+
 for(m in 1:length(min_bias_result)){
-  
-  source("functions/bias_var_function.R")
   
   ref_future <- get(paste0("tas_",model_names[[m]],"_2100"))
   var_future <- array(0,c(nrow = nrow(ref),ncol = ncol(ref),length(model_names)))
