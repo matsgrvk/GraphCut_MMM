@@ -5,17 +5,19 @@ lapply(list.of.packages, library, character.only = TRUE)
 # install_github("thaos/gcoWrapR")
 library(gcoWrapR)
 
-graphcut <- function(var.present,var.future,gc.type,weight.data,weight.smooth){
+
+graphcut <- function(ref.datacost,models.datacost,models.smoothcost,weight.data,weight.smooth){
   
   ### var_present and var_future : arrays of models outputs used in the GraphCut
   ### name : what type of graph cut will be created : present, hybrid, future.
   ### weight.data and weight.smooth : number (1 for both is approximatly the optimal choice)
   
-  nlabs = length(model_names)-1 ### Number of labels used in the GC. Needs to be total number -1 since C++ index starts from 0
-  width = ncol(ref) ### Number of longitudes
-  height = nrow(ref) ### Number of latitudes
   
-  # Instanciation of the GraphCut environment
+  nlabs = length(model_names)-1 ### Number of labels used in the GC. Needs to be total number -1 since C++ index starts from 0
+  width = ncol(ref.datacost) ### Number of latitudes
+  height = nrow(ref.datacost) ### Number of longitudes
+  
+    # Instanciation of the GraphCut environment
   
   gco <- new(GCoptimizationGridGraph, width, height, nlabs)
   
@@ -32,7 +34,7 @@ graphcut <- function(var.present,var.future,gc.type,weight.data,weight.smooth){
   return(weight * std::abs(data[p + numPix * l]) );
 }',
   includes = c("#include <math.h>", "#include <Rcpp.h>"),
-  rebuild = TRUE, showOutput = TRUE, verbose = TRUE
+  rebuild = FALSE, showOutput = FALSE, verbose = FALSE
   )
   
   cat("Creating SmoothCost function...  ")
@@ -48,35 +50,25 @@ graphcut <- function(var.present,var.future,gc.type,weight.data,weight.smooth){
   return(weight * cost);
 }',
   includes = c("#include <math.h>", "#include <Rcpp.h>"),
-  rebuild = TRUE, showOutput = TRUE, verbose = TRUE
+  rebuild = FALSE, showOutput = FALSE, verbose = FALSE
   )
+  
   
   # Preparing the data to perform GraphCut
   
-  bias <- bias_future <- array(0,c(nrow = height,ncol = width,(length(model_names)-1))) ### Creating the bias arrays to set the data and smooth cost functions
+  bias <- array(0,c(nrow = height,ncol = width,(length(model_names)-1))) ### Creating the bias arrays to set the data and smooth cost functions
   
   for(i in 1:(length(model_names)-1)){
-    bias[,,i] <- var_present[,,i] - ref
-    bias_future[,,i] <- var_future[,,i] - ref_future
+    bias[,,i] <- models.datacost[,,i] - ref.datacost
   }
   
   bias_cpp = c(aperm(bias, c(2, 1, 3))) ### Permuting longitude and latitude since the indexing isn't the same in R and in C++
-  bias_future_cpp = c(aperm(bias_future, c(2, 1, 3)))
+  models_cpp = c(aperm(models.smoothcost, c(2, 1, 3)))
   
-  if(gc.type == "present"){ ### Data and smooth cost calibrated on present data
-    gco$setDataCost(ptrDataCost, list(numPix = width * height, data = bias_cpp, weight = weight.data))
-    gco$setSmoothCost(ptrSmoothCost, list(numPix = width * height, data = bias_cpp, weight = weight.smooth))
-  }
   
-  if(gc.type == "hybrid"){ ### Data cost calibrated on present data and smooth cost calibrated on future data
-    gco$setDataCost(ptrDataCost, list(numPix = width * height, data = bias_cpp, weight = weight.data))
-    gco$setSmoothCost(ptrSmoothCost, list(numPix = width * height, data = bias_future_cpp, weight = weight.smooth))
-  }
+  gco$setDataCost(ptrDataCost, list(numPix = width * height, data = bias_cpp, weight = weight.data))
+  gco$setSmoothCost(ptrSmoothCost, list(numPix = width * height, data = models_cpp, weight = weight.smooth))
   
-  if(gc.type == "future"){ ### Data and smooth cost calibrated on future data
-    gco$setDataCost(ptrDataCost, list(numPix = width * height, data = bias_future_cpp, weight = weight.data))
-    gco$setSmoothCost(ptrSmoothCost, list(numPix = width * height, data = bias_future_cpp, weight = weight.smooth))
-  }
   
   mae_list <- vector("list",(length(model_names)-1)) ### Creating a list to select the best model among the ensemble in terms of mean absolute bias
   
@@ -84,7 +76,7 @@ graphcut <- function(var.present,var.future,gc.type,weight.data,weight.smooth){
     mae_list[[i]] <- mean(abs(bias[,,i]))
   }
   
-  mat_init <- matrix(which.min(mae_list),nrow(ref),ncol(ref)) ### Creating the initialization matrix based on the best model from the previous list
+  mat_init <- matrix(which.min(mae_list)-1, nrow = height, ncol = width) ### Creating the initialization matrix based on the best model from the previous list
   
   vec_init <- as.vector(t(mat_init)) ### Permuting the indexing from R to C++
   
