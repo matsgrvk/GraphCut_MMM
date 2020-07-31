@@ -1,0 +1,1 @@
+Functions folder : contains each functions to perform graphcut, minimum bias per grid cell and mmm + conversion from label attribution to bias and variable matrices.
