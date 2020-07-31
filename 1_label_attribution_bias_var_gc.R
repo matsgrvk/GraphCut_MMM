@@ -27,9 +27,9 @@ for(m in 1:length(model_names)){
   var_present <- var_present[,,-m]
   var_future <- var_future[,,-m]
   
-  gc_result[[m]] <- graphcut(var.present = var_present,
-                      var.future = var_future,
-                      gc.type = "present",
+  gc_result[[m]] <- graphcut(ref.datacost = ref,
+                      models.datacost = var_present,
+                      models.smoothcost = var_future,
                       weight.data = 1,
                       weight.smooth = 1)
 }
@@ -37,7 +37,7 @@ for(m in 1:length(model_names)){
 save(gc_result, file="tmp_gc_result.rdata")
 
 
-bias_var_result <- list("vector",length(gc_result)) ### List of variable and variable biases obtained with GraphCut
+bias_var_gc_result <- list("vector",length(gc_result)) ### List of variable and variable biases obtained with GraphCut
 
 for(m in 1:length(gc_result)){
   
@@ -52,7 +52,7 @@ for(m in 1:length(gc_result)){
   
   var_future <- var_future[,,-m]
   
-  bias_var_result[[m]] <- bias_var(var.future = var_future,
+  bias_var_gc_result[[m]] <- bias_var(var.future = var_future,
                               gc.data = gc_result[[m]])
 }
 
@@ -117,3 +117,25 @@ for(m in 1:length(model_names)){
 }
 
 save(min_bias_result, file="tmp_min_bias_result.rdata")
+
+bias_var_min_bias_result <- list("vector",length(min_bias_result)) ### List of variable and variable biases obtained with GraphCut
+
+for(m in 1:length(min_bias_result)){
+  
+  source("bias_var_function.R")
+  
+  ref_future <- get(paste0("tas_",model_names[[m]],"_2100"))
+  var_future <- array(0,c(nrow = nrow(ref),ncol = ncol(ref),length(model_names)))
+  
+  for(i in 1:length(model_names)){
+    var_future[,,i] <- get(paste0(var,"_",model_names[[i]],"_2100"))
+  }
+  
+  var_future <- var_future[,,-m]
+  
+  bias_var_result[[m]] <- bias_var(var.future = var_future,
+                                   gc.data = min_bias_result[[m]])
+}
+
+system("rm tmp_min_bias_result.rdata")
+save(min_bias_result, bias_var_result, file="label_attribution_bias_var_min_bias.rdata")
